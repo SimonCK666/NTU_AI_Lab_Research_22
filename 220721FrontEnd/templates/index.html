@@ -1,0 +1,31 @@
+<!--
+ * @Author: SimonCK666 SimonYang223@163.com
+ * @Date: 2022-07-22 10:16:51
+ * @LastEditors: SimonCK666 SimonYang223@163.com
+ * @LastEditTime: 2022-07-22 10:22:57
+ * @FilePath: \220721FrontEnd\template\index.html
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBS Website</title>
+</head>
+<body>
+    <h1>DBS Share Price Prediction</h1>
+    <form action="/" method="post">
+        <p>Please key in USD to SGD rates (eg 1.4)</p>
+        <p>
+            <input type="number" step="0.01" name="rates">
+        </p>
+        <p>
+            <input type="submit" value="Enter">
+        </p>
+    </form>
+    <p>The predicted share price of DBS (using regression) is {{result_re}}</p>
+    <p>The predicted share price of DBS (using tree) is {{result_tree}}</p>
+</body>
+</html>
