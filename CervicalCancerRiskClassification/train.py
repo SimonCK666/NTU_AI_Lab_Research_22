@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:08:07
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-07-28 19:58:39
+LastEditTime: 2022-07-29 17:08:35
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\train.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -13,23 +13,37 @@ from torch import nn, optim
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
 import torchvision
+from torchvision.models import alexnet
+from torchvision.models import vgg16
+from torchvision.models import resnet50
 import sys
 from PIL import Image
+import numpy as np
 import matplotlib.pyplot as plt
 from torchvision import datasets
 from torchvision.transforms import ToTensor, Lambda, Compose
 from createDataLoader import LoadData
+from torch.utils.tensorboard import SummaryWriter # Load SummaryWriter
+# AlexNet 150epoch; Accuracy: 57.8%
 from hqNet import AlexNet
 
+writer = SummaryWriter("logs") # put file into logs folder
 
-train_root  = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train"
-test_root = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\test\\test"
-
+# train_root  = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train"
+train_root  = "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/"
+# test_root = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\test\\test"
+test_root = "/data/hyang/224_224_CervicalCancerScreening/kaggle/test/test"
 
 #if wanted to display image 
-img = Image.open('E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train\\Type_1\\0.jpg')
-plt.imshow(img)
-print("Example Image Size: {}".format(img.size))
+# img = Image.open('E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train\\Type_1\\0.jpg')
+# plt.imshow(img)
+# print("Example Image Size: {}".format(img.size))
+# image_path="E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train\\Type_1\\0.jpg"
+image_path="/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/Type_1/0.jpg"
+
+img=Image.open(image_path) # PIL库中的Image来打开指定路径下的图片，并将数据存入imgzhong
+img_arrey = np.array(img) # 数据类型转化
+writer.add_image("example_img",img_arrey,2,dataformats='HWC') #HWC类型格式，即高、宽、通道RBG
 
 # Set the currently used GPU device to device 0 only
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"   
@@ -37,39 +51,10 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 # Define the device, and whether to use GPU will be automatically selected according to the computer configuration
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-num_classes = len([i for i in os.listdir(train_root)])
-print("Number of Classes: {}".format(num_classes))
+# num_classes = len([i for i in os.listdir(train_root)])
+# print("Number of Classes: {}".format(num_classes))
 
 
-# 定义网络模型
-class NeuralNetwork(nn.Module):
-    def __init__(self):
-        super(NeuralNetwork, self).__init__()
-        # 碾平，将数据碾平为一维
-        self.flatten = nn.Flatten()
-        # 定义linear_relu_stack，由以下众多层构成
-        self.linear_relu_stack = nn.Sequential(
-            # 全连接层
-            nn.Linear(3*224*224, 512),
-            # ReLU激活函数
-            nn.ReLU(),
-            # 全连接层
-            nn.Linear(512, 512),
-            nn.ReLU(),
-            nn.Linear(512, 6),
-            nn.ReLU()
-        )
-    # x为传入数据
-    def forward(self, x):
-        # x先经过碾平变为1维
-        x = self.flatten(x)
-        # 随后x经过linear_relu_stack
-        logits = self.linear_relu_stack(x)
-        # 输出logits
-        return logits
- 
- 
- 
 # 定义训练函数，需要
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
@@ -89,11 +74,17 @@ def train(dataloader, model, loss_fn, optimizer):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
- 
+        
+        # loss, current = loss.item(), batch * len(X)
+        
         # 每训练100次，输出一次当前信息
         if batch % 100 == 0:
             loss, current = loss.item(), batch * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+            # writer.add_scalar("Train Loss", loss, batch/100) #三个参数分别是 图片标题、y轴、x轴
+            # writer.add_scalar("Train Current", current, batch/100) #三个参数分别是 图片标题、y轴、x轴
+            # writer.add_scalar("Train Size", size, batch/100) #三个参数分别是 图片标题、y轴、x轴
+        return loss, current
  
  
 def test(dataloader, model):
@@ -120,11 +111,13 @@ def test(dataloader, model):
     correct /= size
     print("correct = ",correct)
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
- 
+    accuracy = 100 * correct
+    avg_loss = test_loss
+    return accuracy, avg_loss
  
  
 if __name__=='__main__':
-    batch_size = 10
+    batch_size = 16
  
     # # 给训练集和测试集分别创建一个数据集加载器
     train_data = LoadData("train.txt", True)
@@ -134,10 +127,10 @@ if __name__=='__main__':
     train_dataloader = DataLoader(dataset=train_data, num_workers=4, pin_memory=True, batch_size=batch_size, shuffle=True)
     test_dataloader = DataLoader(dataset=valid_data, num_workers=4, pin_memory=True, batch_size=batch_size)
  
-    # for X, y in train_dataloader:
-    #     print("Shape of X [N, C, H, W]: ", X.shape)
-    #     print("Shape of y: ", y.shape, y.dtype)
-    #     break
+    for X, y in train_dataloader:
+        print("Shape of X [N, C, H, W]: ", X.shape)
+        print("Shape of y: ", y.shape, y.dtype)
+        break
  
  
     # 如果显卡可用，则用显卡进行训练
@@ -145,8 +138,22 @@ if __name__=='__main__':
     print("Using {} device".format(device))
  
     # 调用刚定义的模型，将模型转到GPU（如果可用）
-    # model = NeuralNetwork().to(device)
-    model = AlexNet().to(device)
+    '''
+        1. AlexNet
+    '''
+    # model = AlexNet().to(device)
+    model = alexnet(pretrained=True)
+    model.classifier[6] = nn.Linear(4096, 3)
+    '''
+        2. VGG16
+    '''
+    # model = vgg16(pretrained=True)
+    # model.classifier[6] = nn.Linear(4096, 3)
+    '''
+        3. ResNet50
+    '''
+    # model = resnet50(pretrained=True)
+    # model.fc = nn.Linear(2048, 3)
  
     print(model)
  
@@ -155,20 +162,28 @@ if __name__=='__main__':
  
     # 定义优化器，用来训练时候优化模型参数，随机梯度下降法
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)  # 初始学习率
- 
- 
-    # 一共训练5次
-    epochs = 5
+    '''
+        Optimization 1: Change optimizer from SGD to Nadam
+    '''
+    # optimizer = torch.optim.NAdam(model.parameters(), lr=1e-3)  # 初始学习率
+
+
+    # 一共训练1500次
+    epochs = 1500
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")
-        train(train_dataloader, model, loss_fn, optimizer)
-        test(test_dataloader, model)
+        loss, current = train(train_dataloader, model, loss_fn, optimizer)
+        accuracy, avg_loss = test(test_dataloader, model)
+        writer.add_scalar("Train Loss", loss, t) #三个参数分别是 图片标题、y轴、x轴
+        writer.add_scalar("Train Current", current, t) #三个参数分别是 图片标题、y轴、x轴
+        writer.add_scalar("Test Accuracy", accuracy, t) #三个参数分别是 图片标题、y轴、x轴
+        writer.add_scalar("Test Avg Loss", avg_loss, t) #三个参数分别是 图片标题、y轴、x轴
     print("Done!")
  
     # 保存训练好的模型
-    # torch.save(model.state_dict(), "model.pth")
-    # print("Saved PyTorch Model State to model.pth")
- 
+    # torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\AlexNet150e\\AlexNet1500emodel.pth")
+    torch.save(model.state_dict(), "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/exp/AlexNet1500emodel.pth")
+    print("Saved PyTorch Model State to exp/AlexNet150emodel.pth")
  
  
     # 读取训练好的模型，加载训练好的参数
@@ -178,21 +193,14 @@ if __name__=='__main__':
  
     # # 定义所有类别
     # classes = [
-    #     "T-shirt/top",
-    #     "Trouser",
-    #     "Pullover",
-    #     "Dress",
-    #     "Coat",
-    #     "Sandal",
-    #     "Shirt",
-    #     "Sneaker",
-    #     "Bag",
-    #     "Ankle boot",
+    #     "Type1",
+    #     "Type2",
+    #     "Type3",
     # ]
-    #
+    
     # # 模型进入验证阶段
     # model.eval()
-    #
+    
     # x, y = test_data[0][0], test_data[0][1]
     # with torch.no_grad():
     #     pred = model(x)
