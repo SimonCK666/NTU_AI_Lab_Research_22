@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:08:07
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-07-29 17:08:35
+LastEditTime: 2022-07-30 11:29:27
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\train.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -27,7 +27,7 @@ from torch.utils.tensorboard import SummaryWriter # Load SummaryWriter
 # AlexNet 150epoch; Accuracy: 57.8%
 from hqNet import AlexNet
 
-writer = SummaryWriter("logs") # put file into logs folder
+# writer = SummaryWriter("logs") # put file into logs folder
 
 # train_root  = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train"
 train_root  = "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/"
@@ -39,11 +39,11 @@ test_root = "/data/hyang/224_224_CervicalCancerScreening/kaggle/test/test"
 # plt.imshow(img)
 # print("Example Image Size: {}".format(img.size))
 # image_path="E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train\\Type_1\\0.jpg"
-image_path="/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/Type_1/0.jpg"
+# image_path="/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/Type_1/0.jpg"
 
-img=Image.open(image_path) # PIL库中的Image来打开指定路径下的图片，并将数据存入imgzhong
-img_arrey = np.array(img) # 数据类型转化
-writer.add_image("example_img",img_arrey,2,dataformats='HWC') #HWC类型格式，即高、宽、通道RBG
+# img=Image.open(image_path) # PIL库中的Image来打开指定路径下的图片，并将数据存入imgzhong
+# img_arrey = np.array(img) # 数据类型转化
+# writer.add_image("example_img",img_arrey,2,dataformats='HWC') #HWC类型格式，即高、宽、通道RBG
 
 # Set the currently used GPU device to device 0 only
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"   
@@ -60,6 +60,7 @@ def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
     # 从数据加载器中读取batch（一次读取多少张，即批次数），X(图片数据)，y（图片真实标签）。
     for batch, (X, y) in enumerate(dataloader):
+        # print("batch: {}".format(batch))
         # 将数据存到显卡
         X, y = X.cuda(), y.cuda()
  
@@ -74,22 +75,15 @@ def train(dataloader, model, loss_fn, optimizer):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        
-        # loss, current = loss.item(), batch * len(X)
-        
-        # 每训练100次，输出一次当前信息
-        if batch % 100 == 0:
+                
+        # # 每训练100次，输出一次当前信息
+        if batch % 10 == 0:
             loss, current = loss.item(), batch * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
-            # writer.add_scalar("Train Loss", loss, batch/100) #三个参数分别是 图片标题、y轴、x轴
-            # writer.add_scalar("Train Current", current, batch/100) #三个参数分别是 图片标题、y轴、x轴
-            # writer.add_scalar("Train Size", size, batch/100) #三个参数分别是 图片标题、y轴、x轴
-        return loss, current
  
  
 def test(dataloader, model):
     size = len(dataloader.dataset)
-    print("size = ",size)
     # 将模型转为验证模式
     model.eval()
     # 初始化test_loss 和 correct， 用来统计每次的误差
@@ -111,13 +105,10 @@ def test(dataloader, model):
     correct /= size
     print("correct = ",correct)
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
-    accuracy = 100 * correct
-    avg_loss = test_loss
-    return accuracy, avg_loss
  
  
 if __name__=='__main__':
-    batch_size = 16
+    batch_size = 14
  
     # # 给训练集和测试集分别创建一个数据集加载器
     train_data = LoadData("train.txt", True)
@@ -142,7 +133,7 @@ if __name__=='__main__':
         1. AlexNet
     '''
     # model = AlexNet().to(device)
-    model = alexnet(pretrained=True)
+    model = alexnet(pretrained=False)
     model.classifier[6] = nn.Linear(4096, 3)
     '''
         2. VGG16
@@ -154,7 +145,8 @@ if __name__=='__main__':
     '''
     # model = resnet50(pretrained=True)
     # model.fc = nn.Linear(2048, 3)
- 
+    
+    model.to(device)
     print(model)
  
     # 定义损失函数，计算相差多少，交叉熵，
@@ -172,18 +164,15 @@ if __name__=='__main__':
     epochs = 1500
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")
-        loss, current = train(train_dataloader, model, loss_fn, optimizer)
-        accuracy, avg_loss = test(test_dataloader, model)
-        writer.add_scalar("Train Loss", loss, t) #三个参数分别是 图片标题、y轴、x轴
-        writer.add_scalar("Train Current", current, t) #三个参数分别是 图片标题、y轴、x轴
-        writer.add_scalar("Test Accuracy", accuracy, t) #三个参数分别是 图片标题、y轴、x轴
-        writer.add_scalar("Test Avg Loss", avg_loss, t) #三个参数分别是 图片标题、y轴、x轴
+        train(train_dataloader, model, loss_fn, optimizer)
+        test(test_dataloader, model)
+
     print("Done!")
  
     # 保存训练好的模型
     # torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\AlexNet150e\\AlexNet1500emodel.pth")
     torch.save(model.state_dict(), "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/exp/AlexNet1500emodel.pth")
-    print("Saved PyTorch Model State to exp/AlexNet150emodel.pth")
+    print("Saved PyTorch Model State to exp/AlexNet1500emodel.pth")
  
  
     # 读取训练好的模型，加载训练好的参数
