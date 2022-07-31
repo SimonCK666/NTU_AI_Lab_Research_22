@@ -20,7 +20,10 @@ train_ratio = 0.7
 test_ratio = 1-train_ratio
 
 # rootdata  = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train"
-rootdata  = "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train"
+rootdata  = "E:\\NTUAILab\\Data\\MultiCancerDataset\\Multi Cancer\\Cervical Cancer"
+
+# rootdata  = "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train"
+# rootdata  = "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train"
 
 train_list, test_list = [],[]
 data_list = []

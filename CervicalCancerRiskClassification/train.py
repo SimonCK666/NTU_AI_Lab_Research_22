@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:08:07
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-07-31 10:44:25
+LastEditTime: 2022-07-31 20:54:32
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\train.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -30,9 +30,9 @@ from torch_deform_conv.cnn import get_cnn, get_deform_cnn
 
 # writer = SummaryWriter("logs") # put file into logs folder
 
-train_root  = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train"
+# train_root  = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train"
 # train_root  = "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/"
-test_root = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\test\\test"
+# test_root = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\test\\test"
 # test_root = "/data/hyang/224_224_CervicalCancerScreening/kaggle/test/test"
 
 #if wanted to display image 
@@ -139,8 +139,8 @@ if __name__=='__main__':
     '''
         2. VGG16
     '''
-    # model = vgg16(pretrained=True)
-    # model.classifier[6] = nn.Linear(4096, 3)
+    model = vgg16(pretrained=True)
+    model.classifier[6] = nn.Linear(4096, 5)
     '''
         3. ResNet50
     '''
@@ -149,8 +149,8 @@ if __name__=='__main__':
     '''
         4. Deformable Conv
     '''
-    model = get_deform_cnn(trainable=True)
-    model.fc = nn.Linear(128, 3)
+    # model = get_deform_cnn(trainable=True)
+    # model.fc = nn.Linear(128, 3)
     
     model.to(device)
     print(model)
@@ -159,7 +159,7 @@ if __name__=='__main__':
     loss_fn = nn.CrossEntropyLoss()
  
     # 定义优化器，用来训练时候优化模型参数，随机梯度下降法
-    optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)  # 初始学习率
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)  # 初始学习率
     '''
         Optimization 1: Change optimizer from SGD to Nadam
     '''
@@ -167,7 +167,7 @@ if __name__=='__main__':
 
 
     # 一共训练1500次
-    epochs = 1500
+    epochs = 150
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")
         train(train_dataloader, model, loss_fn, optimizer)
@@ -176,7 +176,7 @@ if __name__=='__main__':
     print("Done!")
  
     # 保存训练好的模型
-    torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\DConvmodel.pth")
+    torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\VGG16model.pth")
     # torch.save(model.state_dict(), "exp/AlexNet1500emodel.pth")
     print("Saved PyTorch Model State to exp/DConvmodel.pth")
  
