@@ -30,10 +30,10 @@ from torch_deform_conv.cnn import get_cnn, get_deform_cnn
 
 # writer = SummaryWriter("logs") # put file into logs folder
 
-train_root  = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train"
-# train_root  = "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/"
-test_root = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\test\\test"
-# test_root = "/data/hyang/224_224_CervicalCancerScreening/kaggle/test/test"
+# train_root  = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train"
+train_root  = "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/"
+# test_root = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\test\\test"
+test_root = "/data/hyang/224_224_CervicalCancerScreening/kaggle/test/test"
 
 #if wanted to display image 
 # img = Image.open('E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train\\Type_1\\0.jpg')
@@ -159,11 +159,11 @@ if __name__=='__main__':
     loss_fn = nn.CrossEntropyLoss()
  
     # 定义优化器，用来训练时候优化模型参数，随机梯度下降法
-    optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)  # 初始学习率
+    # optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)  # 初始学习率
     '''
         Optimization 1: Change optimizer from SGD to Nadam
     '''
-    # optimizer = torch.optim.NAdam(model.parameters(), lr=1e-3)  # 初始学习率
+    optimizer = torch.optim.NAdam(model.parameters(), lr=1e-3)  # 初始学习率
 
 
     # 一共训练1500次
@@ -176,8 +176,8 @@ if __name__=='__main__':
     print("Done!")
  
     # 保存训练好的模型
-    torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\DConvmodel.pth")
-    # torch.save(model.state_dict(), "exp/AlexNet1500emodel.pth")
+    # torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\DConvmodel.pth")
+    torch.save(model.state_dict(), "exp/DConvmodel.pth")
     print("Saved PyTorch Model State to exp/DConvmodel.pth")
  
  
