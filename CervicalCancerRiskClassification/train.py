@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:08:07
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-07-30 11:29:27
+LastEditTime: 2022-07-31 10:44:25
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\train.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -26,13 +26,14 @@ from createDataLoader import LoadData
 from torch.utils.tensorboard import SummaryWriter # Load SummaryWriter
 # AlexNet 150epoch; Accuracy: 57.8%
 from hqNet import AlexNet
+from torch_deform_conv.cnn import get_cnn, get_deform_cnn
 
 # writer = SummaryWriter("logs") # put file into logs folder
 
-# train_root  = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train"
-train_root  = "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/"
-# test_root = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\test\\test"
-test_root = "/data/hyang/224_224_CervicalCancerScreening/kaggle/test/test"
+train_root  = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train"
+# train_root  = "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/"
+test_root = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\test\\test"
+# test_root = "/data/hyang/224_224_CervicalCancerScreening/kaggle/test/test"
 
 #if wanted to display image 
 # img = Image.open('E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train\\Type_1\\0.jpg')
@@ -108,7 +109,7 @@ def test(dataloader, model):
  
  
 if __name__=='__main__':
-    batch_size = 14
+    batch_size = 3
  
     # # 给训练集和测试集分别创建一个数据集加载器
     train_data = LoadData("train.txt", True)
@@ -133,8 +134,8 @@ if __name__=='__main__':
         1. AlexNet
     '''
     # model = AlexNet().to(device)
-    model = alexnet(pretrained=False)
-    model.classifier[6] = nn.Linear(4096, 3)
+    # model = alexnet(pretrained=True)
+    # model.classifier[6] = nn.Linear(4096, 3)
     '''
         2. VGG16
     '''
@@ -145,6 +146,11 @@ if __name__=='__main__':
     '''
     # model = resnet50(pretrained=True)
     # model.fc = nn.Linear(2048, 3)
+    '''
+        4. Deformable Conv
+    '''
+    model = get_deform_cnn(trainable=True)
+    model.fc = nn.Linear(128, 3)
     
     model.to(device)
     print(model)
@@ -170,9 +176,9 @@ if __name__=='__main__':
     print("Done!")
  
     # 保存训练好的模型
-    # torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\AlexNet150e\\AlexNet1500emodel.pth")
-    torch.save(model.state_dict(), "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/exp/AlexNet1500emodel.pth")
-    print("Saved PyTorch Model State to exp/AlexNet1500emodel.pth")
+    torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\DConvmodel.pth")
+    # torch.save(model.state_dict(), "exp/AlexNet1500emodel.pth")
+    print("Saved PyTorch Model State to exp/DConvmodel.pth")
  
  
     # 读取训练好的模型，加载训练好的参数
