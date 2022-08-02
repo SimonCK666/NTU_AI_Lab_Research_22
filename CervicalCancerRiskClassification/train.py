@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:08:07
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-08-02 17:29:04
+LastEditTime: 2022-08-02 20:16:36
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\train.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -19,12 +19,12 @@ from torchvision import transforms, utils
 import torchvision
 from torchvision.models import alexnet
 from torchvision.models import vgg16
-# from torchvision.models import resnet50
+from torchvision.models import resnet50
 from torchvision import datasets
 from torchvision.transforms import ToTensor, Lambda, Compose
 from createDataLoader import LoadData
 from torch.utils.tensorboard import SummaryWriter # Load SummaryWriter
-from hqNet import resnet50
+from hqNet import HQNet
 from torch_deform_conv.cnn import get_cnn, get_deform_cnn
 
 # writer = SummaryWriter("logs") # put file into logs folder
@@ -146,13 +146,18 @@ if __name__=='__main__':
     '''
         3. ResNet50
     '''
-    model = resnet50(pretrained=False)
-    model.fc = nn.Linear(2048, 5)
+    # model = resnet50(pretrained=True)
+    # model.fc = nn.Linear(2048, 5)
     '''
         4. Deformable Conv
     '''
     # model = get_deform_cnn(trainable=True)
     # model.fc = nn.Linear(128, 5)
+    
+    '''
+        3. HQNet62
+    '''
+    model = HQNet(pretrained=False)
     
     model.to(device)
     print(model)
@@ -162,16 +167,16 @@ if __name__=='__main__':
     loss_fn = nn.CrossEntropyLoss()
  
     # 定义优化器，用来训练时候优化模型参数，随机梯度下降法
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)  # 初始学习率
+    # optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)  # 初始学习率
     '''
         Optimization 1: Change optimizer from SGD to Nadam
     '''
-    # optimizer = torch.optim.NAdam(model.parameters(), lr=1e-3)  # 初始学习率
+    optimizer = torch.optim.NAdam(model.parameters(), lr=1e-3)  # 初始学习率
 
 
     # 一共训练500次
     start_time = time.time()
-    epochs = 50
+    epochs = 150
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")
         train(train_dataloader, model, loss_fn, optimizer)
@@ -181,7 +186,7 @@ if __name__=='__main__':
     print('Done. (%.3fs)' % ((end_time - start_time) / 10))
  
     # 保存训练好的模型
-    torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\Dconv_epo500_model.pth")
-    # torch.save(model.state_dict(), "exp/ResNet50_epo500_model.pth")
-    print("Saved PyTorch Model State to exp/ResNet50_epo500_model.pth")
+    # torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\Dconv_epo500_model.pth")
+    torch.save(model.state_dict(), "exp/HQNet_epo150_model.pth")
+    print("Saved PyTorch Model State to exp/HQNet_epo150_model.pth")
  

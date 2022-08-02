@@ -2,10 +2,11 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-29 16:17:22
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-08-02 11:31:47
+LastEditTime: 2022-08-02 19:48:32
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\test.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
+import torch
 from torch import nn
 from torchvision.models import alexnet
 from torchvision.models import vgg16
@@ -13,7 +14,7 @@ from torchvision.models import resnet50
 from createDataLoader import LoadData
 from torch.utils.data import Dataset, DataLoader
 from vit_pytorch.deepvit import DeepViT
-
+from hqNet import HQNet
 
 
 def model():
@@ -73,13 +74,26 @@ def data():
     #     # break
     
     train(train_dataloader)
-    
+
+
+def createHQ():
+    hqmodel = HQNet(pretrained=False)
+    print(hqmodel)
+
+
+def testDropout():
+    dmodel = nn.Dropout2d(p=0.2)
+    input = torch.randn(20, 16, 32, 32)
+    out = dmodel(input)
+    print(out.shape)
+
 
 def main():
     # model()
     # data()
-    createViT()
-    
+    # createViT()
+    createHQ()
+    # testDropout()
 
 if __name__ == "__main__":
     main()

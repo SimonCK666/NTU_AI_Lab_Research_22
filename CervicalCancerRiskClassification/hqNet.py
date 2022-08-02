@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:05:28
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-08-02 17:33:07
+LastEditTime: 2022-08-02 20:03:32
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\hqNet.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -66,7 +66,7 @@ class BasicBlock(nn.Module):
         # Both self.conv1 and self.downsample layers downsample the input when stride != 1
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = norm_layer(planes)
-        self.relu = nn.ReLU(inplace=True)
+        self.gelu = nn.GELU()
         self.conv2 = conv3x3(planes, planes)
         self.bn2 = norm_layer(planes)
         self.downsample = downsample
@@ -77,7 +77,7 @@ class BasicBlock(nn.Module):
 
         out = self.conv1(x)
         out = self.bn1(out)
-        out = self.relu(out)
+        out = self.gelu(out)
 
         out = self.conv2(out)
         out = self.bn2(out)
@@ -86,7 +86,7 @@ class BasicBlock(nn.Module):
             identity = self.downsample(x)
 
         out += identity
-        out = self.relu(out)
+        out = self.gelu(out)
 
         return out
 
@@ -122,7 +122,7 @@ class Bottleneck(nn.Module):
         self.bn2 = norm_layer(width)
         self.conv3 = conv1x1(width, planes * self.expansion)
         self.bn3 = norm_layer(planes * self.expansion)
-        self.relu = nn.ReLU(inplace=True)
+        self.gelu = nn.GELU()
         self.downsample = downsample
         self.stride = stride
 
@@ -131,11 +131,11 @@ class Bottleneck(nn.Module):
 
         out = self.conv1(x)
         out = self.bn1(out)
-        out = self.relu(out)
+        out = self.gelu(out)
 
         out = self.conv2(out)
         out = self.bn2(out)
-        out = self.relu(out)
+        out = self.gelu(out)
 
         out = self.conv3(out)
         out = self.bn3(out)
@@ -144,7 +144,7 @@ class Bottleneck(nn.Module):
             identity = self.downsample(x)
 
         out += identity
-        out = self.relu(out)
+        out = self.gelu(out)
 
         return out
 
@@ -155,7 +155,7 @@ class ResNet(nn.Module):
         self,
         block: Type[Union[BasicBlock, Bottleneck]],
         layers: List[int],
-        num_classes: int = 1000,
+        num_classes: int = 5,
         zero_init_residual: bool = False,
         groups: int = 1,
         width_per_group: int = 64,
@@ -186,7 +186,7 @@ class ResNet(nn.Module):
         self.conv1 = self.stem_block(3, self.inplanes)
         
         self.bn1 = norm_layer(self.inplanes)
-        self.relu = nn.ReLU(inplace=True)
+        self.gelu = nn.GELU()
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2,
@@ -196,6 +196,7 @@ class ResNet(nn.Module):
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2,
                                        dilate=replace_stride_with_dilation[2])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.dropout = nn.Dropout2d(p=0.2)
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
         for m in self.modules():
@@ -217,11 +218,11 @@ class ResNet(nn.Module):
     
     def stem_block(self, in_channels, out_channels):
         return  nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=2, padding=3,
+            nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=2, padding=1,
                                bias=False),
-            nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=2, padding=3,
+            nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=2, padding=1,
                                bias=False),
-            nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=2, padding=3,
+            nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=2, padding=1,
                                bias=False)
         )
     
@@ -254,7 +255,7 @@ class ResNet(nn.Module):
         # See note [TorchScript super()]
         x = self.conv1(x)
         x = self.bn1(x)
-        x = self.relu(x)
+        x = self.gelu(x)
         x = self.maxpool(x)
 
         x = self.layer1(x)
@@ -263,6 +264,7 @@ class ResNet(nn.Module):
         x = self.layer4(x)
 
         x = self.avgpool(x)
+        x = self.dropout(x)
         x = torch.flatten(x, 1)
         x = self.fc(x)
 
@@ -312,7 +314,19 @@ def resnet34(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> 
                    **kwargs)
 
 
-def resnet50(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> ResNet:
+# def resnet50(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> ResNet:
+#     r"""ResNet-50 model from
+#     `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_.
+
+#     Args:
+#         pretrained (bool): If True, returns a model pre-trained on ImageNet
+#         progress (bool): If True, displays a progress bar of the download to stderr
+#     """
+#     return _resnet('resnet50', Bottleneck, [3, 4, 6, 3], pretrained, progress,
+#                    **kwargs)
+    
+
+def HQNet(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> ResNet:
     r"""ResNet-50 model from
     `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_.
 
@@ -320,7 +334,7 @@ def resnet50(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> 
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    return _resnet('resnet50', Bottleneck, [3, 4, 6, 3], pretrained, progress,
+    return _resnet('resnet50', Bottleneck, [3, 4, 10, 3], pretrained, progress,
                    **kwargs)
 
 
