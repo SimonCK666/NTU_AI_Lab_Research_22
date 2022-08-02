@@ -108,14 +108,14 @@ def test(dataloader, model):
  
  
 if __name__=='__main__':
-    batch_size = 3
+    batch_size = 10
  
     # # 给训练集和测试集分别创建一个数据集加载器
-    # train_data = LoadData("train.txt", True)
-    # valid_data = LoadData("test.txt", False)
+    train_data = LoadData("train.txt", True)
+    valid_data = LoadData("test.txt", False)
     # Windows Data
-    train_data = LoadData("winData/train.txt", True)
-    valid_data = LoadData("winData/test.txt", False)
+    # train_data = LoadData("winData/train.txt", True)
+    # valid_data = LoadData("winData/test.txt", False)
  
  
     train_dataloader = DataLoader(dataset=train_data, num_workers=4, pin_memory=True, batch_size=batch_size, shuffle=True)
@@ -171,7 +171,7 @@ if __name__=='__main__':
 
     # 一共训练500次
     start_time = time.time()
-    epochs = 500
+    epochs = 50
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")
         train(train_dataloader, model, loss_fn, optimizer)
@@ -184,10 +184,4 @@ if __name__=='__main__':
     torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\Dconv_epo500_model.pth")
     # torch.save(model.state_dict(), "exp/ResNet50_epo500_model.pth")
     print("Saved PyTorch Model State to exp/ResNet50_epo500_model.pth")
-    print("=============================================================")
-    print("=============================================================")
-    print('flops = %s' % flops)
-    print('params = %s' % params)
-    print("=============================================================")
-    print("=============================================================")
  
