@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-29 16:17:22
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-07-30 10:55:53
+LastEditTime: 2022-08-02 11:31:47
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\test.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -12,6 +12,7 @@ from torchvision.models import vgg16
 from torchvision.models import resnet50
 from createDataLoader import LoadData
 from torch.utils.data import Dataset, DataLoader
+from vit_pytorch.deepvit import DeepViT
 
 
 
@@ -27,6 +28,21 @@ def model():
     resnet50model = resnet50()
     resnet50model.fc = nn.Linear(2048, 3)
     print(resnet50model)
+    
+
+def createViT():
+    deepViT = DeepViT(
+        image_size = 224,
+        patch_size = 32,
+        num_classes = 1000,
+        dim = 1024,
+        depth = 6,
+        heads = 16,
+        mlp_dim = 2048,
+        dropout = 0.1,
+        emb_dropout = 0.1
+    )
+    print(deepViT)
     
 
 def train(dataloader):
@@ -61,7 +77,9 @@ def data():
 
 def main():
     # model()
-    data()
+    # data()
+    createViT()
+    
 
 if __name__ == "__main__":
     main()

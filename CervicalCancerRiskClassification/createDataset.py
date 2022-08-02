@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:44:34
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-07-28 19:56:39
+LastEditTime: 2022-08-02 10:51:39
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\createDataset.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -20,10 +20,10 @@ train_ratio = 0.7
 test_ratio = 1-train_ratio
 
 # rootdata  = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train"
-# rootdata  = "E:\\NTUAILab\\Data\\MultiCancerDataset\\Multi Cancer\\Cervical Cancer"
+rootdata  = "E:\\NTUAILab\\Data\\MultiCancerDataset\\Multi Cancer\\Cervical Cancer"
 
 # rootdata  = "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train"
-rootdata  = "/data/hyang/MultiCancer/CervicalCancer"
+# rootdata  = "/data/hyang/MultiCancer/CervicalCancer"
 
 train_list, test_list = [],[]
 data_list = []
@@ -49,12 +49,24 @@ for a,b,c in os.walk(rootdata):
 random.shuffle(train_list)
 random.shuffle(test_list)
 
-with open('train.txt','w',encoding='UTF-8') as f:
+# windows
+with open('winData/train.txt','w',encoding='UTF-8') as f:
     for train_img in train_list:
         f.write(str(train_img))
 print("Train Data Done!")
 
-with open('test.txt','w',encoding='UTF-8') as f:
+with open('winData/test.txt','w',encoding='UTF-8') as f:
     for test_img in test_list:
         f.write(test_img)
 print("Test Data Done!")
+
+# ubuntu
+# with open('train.txt','w',encoding='UTF-8') as f:
+#     for train_img in train_list:
+#         f.write(str(train_img))
+# print("Train Data Done!")
+
+# with open('test.txt','w',encoding='UTF-8') as f:
+#     for test_img in test_list:
+#         f.write(test_img)
+# print("Test Data Done!")

@@ -2,12 +2,16 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:08:07
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-07-31 20:54:32
+LastEditTime: 2022-08-02 17:29:04
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\train.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
 import os
 import time
+import sys
+from PIL import Image
+import numpy as np
+import matplotlib.pyplot as plt
 import torch
 from torch import nn, optim
 from torch.utils.data import Dataset, DataLoader
@@ -15,17 +19,12 @@ from torchvision import transforms, utils
 import torchvision
 from torchvision.models import alexnet
 from torchvision.models import vgg16
-from torchvision.models import resnet50
-import sys
-from PIL import Image
-import numpy as np
-import matplotlib.pyplot as plt
+# from torchvision.models import resnet50
 from torchvision import datasets
 from torchvision.transforms import ToTensor, Lambda, Compose
 from createDataLoader import LoadData
 from torch.utils.tensorboard import SummaryWriter # Load SummaryWriter
-# AlexNet 150epoch; Accuracy: 57.8%
-from hqNet import AlexNet
+from hqNet import resnet50
 from torch_deform_conv.cnn import get_cnn, get_deform_cnn
 
 # writer = SummaryWriter("logs") # put file into logs folder
@@ -109,11 +108,14 @@ def test(dataloader, model):
  
  
 if __name__=='__main__':
-    batch_size = 10
+    batch_size = 3
  
     # # 给训练集和测试集分别创建一个数据集加载器
-    train_data = LoadData("train.txt", True)
-    valid_data = LoadData("test.txt", False)
+    # train_data = LoadData("train.txt", True)
+    # valid_data = LoadData("test.txt", False)
+    # Windows Data
+    train_data = LoadData("winData/train.txt", True)
+    valid_data = LoadData("winData/test.txt", False)
  
  
     train_dataloader = DataLoader(dataset=train_data, num_workers=4, pin_memory=True, batch_size=batch_size, shuffle=True)
@@ -144,17 +146,18 @@ if __name__=='__main__':
     '''
         3. ResNet50
     '''
-    model = resnet50(pretrained=True)
+    model = resnet50(pretrained=False)
     model.fc = nn.Linear(2048, 5)
     '''
         4. Deformable Conv
     '''
     # model = get_deform_cnn(trainable=True)
-    # model.fc = nn.Linear(128, 3)
+    # model.fc = nn.Linear(128, 5)
     
     model.to(device)
     print(model)
- 
+    
+    
     # 定义损失函数，计算相差多少，交叉熵，
     loss_fn = nn.CrossEntropyLoss()
  
@@ -167,37 +170,24 @@ if __name__=='__main__':
 
 
     # 一共训练500次
+    start_time = time.time()
     epochs = 500
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")
         train(train_dataloader, model, loss_fn, optimizer)
         test(test_dataloader, model)
 
-    print("Done!")
+    end_time = time.time()
+    print('Done. (%.3fs)' % ((end_time - start_time) / 10))
  
     # 保存训练好的模型
-    # torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\VGG16_epo500_model.pth")
-    torch.save(model.state_dict(), "exp/ResNet50_epo500_model.pth")
+    torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\Dconv_epo500_model.pth")
+    # torch.save(model.state_dict(), "exp/ResNet50_epo500_model.pth")
     print("Saved PyTorch Model State to exp/ResNet50_epo500_model.pth")
+    print("=============================================================")
+    print("=============================================================")
+    print('flops = %s' % flops)
+    print('params = %s' % params)
+    print("=============================================================")
+    print("=============================================================")
  
- 
-    # 读取训练好的模型，加载训练好的参数
-    # model = NeuralNetwork()
-    # model.load_state_dict(torch.load("model.pth"))
- 
- 
-    # # 定义所有类别
-    # classes = [
-    #     "Type1",
-    #     "Type2",
-    #     "Type3",
-    # ]
-    
-    # # 模型进入验证阶段
-    # model.eval()
-    
-    # x, y = test_data[0][0], test_data[0][1]
-    # with torch.no_grad():
-    #     pred = model(x)
-    #     predicted, actual = classes[pred[0].argmax(0)], classes[y]
-    #     print(f'Predicted: "{predicted}", Actual: "{actual}"')
