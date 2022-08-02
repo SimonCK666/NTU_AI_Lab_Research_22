@@ -78,7 +78,7 @@ def train(dataloader, model, loss_fn, optimizer):
         optimizer.step()
                 
         # # 每训练100次，输出一次当前信息
-        if batch % 10 == 0:
+        if batch % 100 == 0:
             loss, current = loss.item(), batch * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
  
@@ -109,7 +109,7 @@ def test(dataloader, model):
  
  
 if __name__=='__main__':
-    batch_size = 3
+    batch_size = 10
  
     # # 给训练集和测试集分别创建一个数据集加载器
     train_data = LoadData("train.txt", True)
@@ -139,13 +139,13 @@ if __name__=='__main__':
     '''
         2. VGG16
     '''
-    model = vgg16(pretrained=True)
-    model.classifier[6] = nn.Linear(4096, 5)
+    #model = vgg16(pretrained=True)
+    #model.classifier[6] = nn.Linear(4096, 5)
     '''
         3. ResNet50
     '''
-    # model = resnet50(pretrained=True)
-    # model.fc = nn.Linear(2048, 3)
+    model = resnet50(pretrained=True)
+    model.fc = nn.Linear(2048, 5)
     '''
         4. Deformable Conv
     '''
@@ -166,8 +166,8 @@ if __name__=='__main__':
     # optimizer = torch.optim.NAdam(model.parameters(), lr=1e-3)  # 初始学习率
 
 
-    # 一共训练1500次
-    epochs = 150
+    # 一共训练500次
+    epochs = 500
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")
         train(train_dataloader, model, loss_fn, optimizer)
@@ -176,9 +176,9 @@ if __name__=='__main__':
     print("Done!")
  
     # 保存训练好的模型
-    torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\VGG16model.pth")
-    # torch.save(model.state_dict(), "exp/AlexNet1500emodel.pth")
-    print("Saved PyTorch Model State to exp/DConvmodel.pth")
+    # torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\VGG16_epo500_model.pth")
+    torch.save(model.state_dict(), "exp/ResNet50_epo500_model.pth")
+    print("Saved PyTorch Model State to exp/ResNet50_epo500_model.pth")
  
  
     # 读取训练好的模型，加载训练好的参数
