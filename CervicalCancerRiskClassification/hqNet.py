@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:05:28
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-08-02 20:03:32
+LastEditTime: 2022-08-03 16:16:34
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\hqNet.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -11,6 +11,7 @@ from torch import Tensor
 import torch.nn as nn
 from hub import load_state_dict_from_url
 from typing import Type, Any, Callable, Union, List, Optional
+from torch_deform_conv.layers import ConvOffset2D
 
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
@@ -33,13 +34,19 @@ model_urls = {
 
 def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> nn.Conv2d:
     """3x3 convolution with padding"""
-    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
+    return nn.Sequential(
+        ConvOffset2D(in_planes),
+        nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
                      padding=dilation, groups=groups, bias=False, dilation=dilation)
+    )
 
 
 def conv1x1(in_planes: int, out_planes: int, stride: int = 1) -> nn.Conv2d:
     """1x1 convolution"""
-    return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
+    return nn.Sequential(
+        ConvOffset2D(in_planes),
+        nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
+    )
 
 
 class BasicBlock(nn.Module):

@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:08:07
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-08-03 11:11:41
+LastEditTime: 2022-08-03 19:06:12
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\train.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -136,11 +136,10 @@ if __name__=='__main__':
  
     # 调用刚定义的模型，将模型转到GPU（如果可用）
     '''
-        1. AlexNet
+        1. AlexNet  Accu: 97.3%
     '''
-    # model = AlexNet().to(device)
     # model = alexnet(pretrained=True)
-    # model.classifier[6] = nn.Linear(4096, 3)
+    # model.classifier[6] = nn.Linear(4096, 5)
     '''
         2. VGG16    Accu: 20%
     '''
@@ -152,20 +151,20 @@ if __name__=='__main__':
     # model = vgg19(pretrained=True)
     # model.classifier[6] = nn.Linear(4096, 5)
     '''
-        3. ResNet50
+        3. ResNet50 Accu: 99..
     '''
     # model = resnet50(pretrained=True)
     # model.fc = nn.Linear(2048, 5)
     '''
-        4. Deformable Conv
+        4. Deformable Conv 96.8%
     '''
     # model = get_deform_cnn(trainable=True)
     # model.fc = nn.Linear(128, 5)
     '''
         5. DenseNet
     '''
-    model = densenet121()
-    model.classifier = nn.Linear(1024, 5)
+    # model = densenet121()
+    # model.classifier = nn.Linear(1024, 5)
     '''
         6. Inception3
     '''
@@ -175,8 +174,8 @@ if __name__=='__main__':
         F. HQNet62
     '''
     # 1451.219s
-    # Accu: 99.6%
-    # model = HQNet(pretrained=False)
+    # No Conv Accu: 99.6%
+    model = HQNet(pretrained=False)
     
     model.to(device)
     print(model)
@@ -193,7 +192,7 @@ if __name__=='__main__':
     # optimizer = torch.optim.NAdam(model.parameters(), lr=1e-3)  # 初始学习率
 
 
-    # 一共训练500次
+    # 一共训练150次
     start_time = time.time()
     epochs = 150
     for t in range(epochs):
@@ -206,6 +205,8 @@ if __name__=='__main__':
  
     # 保存训练好的模型
     # torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\Dconv_epo500_model.pth")
-    torch.save(model.state_dict(), "exp/VGG16_epo150_model.pth")
-    print("Saved PyTorch Model State to exp/VGG16_epo150_model.pth")
+    # torch.save(model.state_dict(), "exp/DHQNet_epo150_model.pth")
+    # print("Saved PyTorch Model State to exp/DHQNet_epo150_model.pth")
+    torch.save(model.state_dict(), "exp/Dconv_epo10_model.pth")
+    print("Saved PyTorch Model State to exp/Dconv_epo10_model.pth")
  
