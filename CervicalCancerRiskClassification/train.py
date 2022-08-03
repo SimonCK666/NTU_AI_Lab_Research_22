@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:08:07
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-08-02 20:16:36
+LastEditTime: 2022-08-03 10:32:03
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\train.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -19,6 +19,7 @@ from torchvision import transforms, utils
 import torchvision
 from torchvision.models import alexnet
 from torchvision.models import vgg16
+from torchvision.models import vgg19
 from torchvision.models import resnet50
 from torchvision import datasets
 from torchvision.transforms import ToTensor, Lambda, Compose
@@ -141,7 +142,12 @@ if __name__=='__main__':
     '''
         2. VGG16
     '''
-    model = vgg16(pretrained=True)
+    # model = vgg16(pretrained=True)
+    # model.classifier[6] = nn.Linear(4096, 5)
+    '''
+        2. VGG19
+    '''
+    model = vgg19(pretrained=True)
     model.classifier[6] = nn.Linear(4096, 5)
     '''
         3. ResNet50
