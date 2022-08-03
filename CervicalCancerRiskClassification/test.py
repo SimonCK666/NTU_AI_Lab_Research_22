@@ -12,6 +12,8 @@ from torchvision.models import alexnet
 from torchvision.models import vgg16
 from torchvision.models import vgg19
 from torchvision.models import resnet50
+from torchvision.models import densenet121
+from torchvision.models import Inception3
 from createDataLoader import LoadData
 from torch.utils.data import Dataset, DataLoader
 from vit_pytorch.deepvit import DeepViT
@@ -31,10 +33,17 @@ def model():
     # resnet50model.fc = nn.Linear(2048, 3)
     # print(resnet50model)
     
-    vgg19model = vgg19()
-    vgg19model.classifier[6] = nn.Linear(4096, 5)
-    print(vgg19model)
+    # vgg19model = vgg19()
+    # vgg19model.classifier[6] = nn.Linear(4096, 5)
+    # print(vgg19model)
     
+    # densenet121model = densenet121()
+    # densenet121model.classifier = nn.Linear(1024, 5)
+    # print(densenet121model)
+    
+    Inception3model = Inception3()
+    Inception3model.fc = nn.Linear(2048, 5)
+    print(Inception3model)
 
 def createViT():
     deepViT = DeepViT(

@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:08:07
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-08-03 10:32:03
+LastEditTime: 2022-08-03 11:11:41
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\train.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -20,6 +20,8 @@ import torchvision
 from torchvision.models import alexnet
 from torchvision.models import vgg16
 from torchvision.models import vgg19
+from torchvision.models import densenet121
+from torchvision.models import Inception3
 from torchvision.models import resnet50
 from torchvision import datasets
 from torchvision.transforms import ToTensor, Lambda, Compose
@@ -140,15 +142,15 @@ if __name__=='__main__':
     # model = alexnet(pretrained=True)
     # model.classifier[6] = nn.Linear(4096, 3)
     '''
-        2. VGG16
+        2. VGG16    Accu: 20%
     '''
     # model = vgg16(pretrained=True)
     # model.classifier[6] = nn.Linear(4096, 5)
     '''
-        2. VGG19
+        2. VGG19    Accu: 20%
     '''
-    model = vgg19(pretrained=True)
-    model.classifier[6] = nn.Linear(4096, 5)
+    # model = vgg19(pretrained=True)
+    # model.classifier[6] = nn.Linear(4096, 5)
     '''
         3. ResNet50
     '''
@@ -159,11 +161,21 @@ if __name__=='__main__':
     '''
     # model = get_deform_cnn(trainable=True)
     # model.fc = nn.Linear(128, 5)
-    
     '''
-        3. HQNet62
+        5. DenseNet
+    '''
+    model = densenet121()
+    model.classifier = nn.Linear(1024, 5)
+    '''
+        6. Inception3
+    '''
+    # model = Inception3()
+    # model.fc = nn.Linear(2048, 5)
+    '''
+        F. HQNet62
     '''
     # 1451.219s
+    # Accu: 99.6%
     # model = HQNet(pretrained=False)
     
     model.to(device)
