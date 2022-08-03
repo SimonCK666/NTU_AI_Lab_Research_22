@@ -141,8 +141,8 @@ if __name__=='__main__':
     '''
         2. VGG16
     '''
-    #model = vgg16(pretrained=True)
-    #model.classifier[6] = nn.Linear(4096, 5)
+    model = vgg16(pretrained=True)
+    model.classifier[6] = nn.Linear(4096, 5)
     '''
         3. ResNet50
     '''
@@ -157,7 +157,8 @@ if __name__=='__main__':
     '''
         3. HQNet62
     '''
-    model = HQNet(pretrained=False)
+    # 1451.219s
+    # model = HQNet(pretrained=False)
     
     model.to(device)
     print(model)
@@ -167,11 +168,11 @@ if __name__=='__main__':
     loss_fn = nn.CrossEntropyLoss()
  
     # 定义优化器，用来训练时候优化模型参数，随机梯度下降法
-    # optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)  # 初始学习率
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)  # 初始学习率
     '''
         Optimization 1: Change optimizer from SGD to Nadam
     '''
-    optimizer = torch.optim.NAdam(model.parameters(), lr=1e-3)  # 初始学习率
+    # optimizer = torch.optim.NAdam(model.parameters(), lr=1e-3)  # 初始学习率
 
 
     # 一共训练500次
@@ -187,6 +188,6 @@ if __name__=='__main__':
  
     # 保存训练好的模型
     # torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\Dconv_epo500_model.pth")
-    torch.save(model.state_dict(), "exp/HQNet_epo150_model.pth")
-    print("Saved PyTorch Model State to exp/HQNet_epo150_model.pth")
+    torch.save(model.state_dict(), "exp/VGG16_epo150_model.pth")
+    print("Saved PyTorch Model State to exp/VGG16_epo150_model.pth")
  
