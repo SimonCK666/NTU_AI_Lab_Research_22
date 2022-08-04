@@ -20,10 +20,10 @@ train_ratio = 0.7
 test_ratio = 1-train_ratio
 
 # rootdata  = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train"
-rootdata  = "E:\\NTUAILab\\Data\\MultiCancerDataset\\Multi Cancer\\Cervical Cancer"
+# rootdata  = "E:\\NTUAILab\\Data\\MultiCancerDataset\\Multi Cancer\\Cervical Cancer"
 
 # rootdata  = "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train"
-# rootdata  = "/data/hyang/MultiCancer/CervicalCancer"
+rootdata  = "/data/hyang/MultiCancer/CervicalCancer"
 
 train_list, test_list = [],[]
 data_list = []
@@ -50,23 +50,24 @@ random.shuffle(train_list)
 random.shuffle(test_list)
 
 # windows
-with open('winData/train.txt','w',encoding='UTF-8') as f:
-    for train_img in train_list:
-        f.write(str(train_img))
-print("Train Data Done!")
-
-with open('winData/test.txt','w',encoding='UTF-8') as f:
-    for test_img in test_list:
-        f.write(test_img)
-print("Test Data Done!")
-
-# ubuntu
-# with open('train.txt','w',encoding='UTF-8') as f:
+#  with open('winData/train.txt','w',encoding='UTF-8') as f:
 #     for train_img in train_list:
 #         f.write(str(train_img))
 # print("Train Data Done!")
 
-# with open('test.txt','w',encoding='UTF-8') as f:
+# with open('winData/test.txt','w',encoding='UTF-8') as f:
 #     for test_img in test_list:
 #         f.write(test_img)
 # print("Test Data Done!")
+
+# ubuntu
+with open('train.txt','w',encoding='UTF-8') as f:
+    for train_img in train_list:
+        f.write(str(train_img))
+print("Train Data Done!")
+
+with open('test.txt','w',encoding='UTF-8') as f:
+    for test_img in test_list:
+        f.write(test_img)
+print("Test Data Done!")
+
