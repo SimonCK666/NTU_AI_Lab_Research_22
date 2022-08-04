@@ -114,11 +114,11 @@ if __name__=='__main__':
     batch_size = 3
  
     # # 给训练集和测试集分别创建一个数据集加载器
-    # train_data = LoadData("train.txt", True)
-    # valid_data = LoadData("test.txt", False)
+    train_data = LoadData("train.txt", True)
+    valid_data = LoadData("test.txt", False)
     # Windows Data
-    train_data = LoadData("winData/train.txt", True)
-    valid_data = LoadData("winData/test.txt", False)
+    # train_data = LoadData("winData/train.txt", True)
+    # valid_data = LoadData("winData/test.txt", False)
  
  
     train_dataloader = DataLoader(dataset=train_data, num_workers=4, pin_memory=True, batch_size=batch_size, shuffle=True)
@@ -194,7 +194,7 @@ if __name__=='__main__':
 
     # 一共训练150次
     start_time = time.time()
-    epochs = 1
+    epochs = 50
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")
         train(train_dataloader, model, loss_fn, optimizer)
