@@ -15,13 +15,18 @@ import pandas as pd # pip install pandas
 
 '''
 target_loc = "winData/test.txt"     # 真实标签所在的文件
+# target_loc = "winData/eval.txt"     # 真实标签所在的文件
+
 target_data = pd.read_csv(target_loc, sep="\t", names=["loc","type"])
 true_label = [i for i in target_data["type"]]
 
 # print(true_label)
 
 
-predict_loc = "pred/HQNet_epo150_model_pred_result.csv"     # 3.ModelEvaluate.py生成的文件
+# predict_loc = "pred/HQNet_epo150_model_pred_result.csv"     # 3.ModelEvaluate.py生成的文件
+# predict_loc = "pred/ResNet_epo20_model_pred_result.csv"
+# predict_loc = "pred/ResNet34_epo20_model_pred_result.csv"
+predict_loc = "pred/DenseNet121_epo20_model_pred_result.csv"
 
 predict_data = pd.read_csv(predict_loc)#,index_col=0)
 

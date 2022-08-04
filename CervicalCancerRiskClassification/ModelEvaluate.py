@@ -6,6 +6,8 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 from torchvision.models import resnet34
+from torchvision.models import resnet50
+from torchvision.models import densenet121
 from createDataLoader import LoadData
 import pandas as pd
 from tqdm import tqdm
@@ -43,15 +45,27 @@ if __name__ == "__main__":
         加载预训练模型
     '''
     # 1. 导入模型结构
-    # model = resnet34(pretrained=False)
     model = HQNet(pretrained=False)
+    
+    # model = resnet34(pretrained=False)
+    # model = resnet50()
+    # model.fc = nn.Linear(2048, 5)
+    # model = resnet34(pretrained=False)
+    # model.fc = nn.Linear(512, 5)
+    # model = densenet121()
+    # model.classifier = nn.Linear(1024, 5)
+    
     # num_ftrs = model.fc.in_features    # 获取全连接层的输入
     # model.fc = nn.Linear(num_ftrs, 5)  # 全连接层改为不同的输出
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     # 2. 加载模型参数
 
-    model_loc = "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\hqNet_epo50_model.pth"
+    # model_loc = "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\hqNet_epo50_model.pth"
+    # model_loc = "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\ResNet_epo20_model.pth"
+    # model_loc = "exp/ResNet34_epo20_model.pth"
+    # model_loc = "exp/DenseNet121_epo20_model.pth"
+    model_loc = "exp/DHQNet_epo15_model.pth"
 
     model_dict = torch.load(model_loc)
     model.load_state_dict(model_dict)
@@ -61,6 +75,8 @@ if __name__ == "__main__":
        加载需要预测的图片
     '''
     valid_data = LoadData("winData/test.txt", train_flag=False)
+    # valid_data = LoadData("winData/eval.txt", train_flag=False)
+    
     test_dataloader = DataLoader(dataset=valid_data, num_workers=4, pin_memory=True, batch_size=1)
 
 
@@ -75,6 +91,6 @@ if __name__ == "__main__":
     df_pred = pd.DataFrame(data=pred, columns=label_names)
 
 
-    df_pred.to_csv('pred/HQNet_epo150_model_pred_result.csv', encoding='gbk', index=False)
+    df_pred.to_csv('pred/DHQNet_epo15_model_pred_result.csv', encoding='gbk', index=False)
     print("Done!")
 
