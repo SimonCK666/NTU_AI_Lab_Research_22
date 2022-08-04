@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:08:07
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-07-29 15:35:22
+LastEditTime: 2022-08-04 14:22:36
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\eval.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -99,7 +99,7 @@ with torch.no_grad():
     print(pred_index)
     
     # 增加类别标签
-    classes = ["Type1", "Type2", "Type3"]
+    classes = ["dyk", "koc", "mep", "pab", "sfi"]
     
     # result = "预测类别为： " + str(classes[pred_index[0]]) + " 可能性为: " + str(pred_value[0] * 100) + "%"
     

@@ -6,7 +6,7 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 from torchvision.models import resnet34
-from utils import LoadData, write_result
+from createDataLoader import LoadData
 import pandas as pd
 from tqdm import tqdm
 from hqNet import HQNet
@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     # 2. 加载模型参数
 
-    model_loc = "exp/HQNet_epo150_model.pth"
+    model_loc = "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\hqNet_epo50_model.pth"
 
     model_dict = torch.load(model_loc)
     model.load_state_dict(model_dict)
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     '''
        加载需要预测的图片
     '''
-    valid_data = LoadData("test.txt", train_flag=False)
+    valid_data = LoadData("winData/test.txt", train_flag=False)
     test_dataloader = DataLoader(dataset=valid_data, num_workers=4, pin_memory=True, batch_size=1)
 
 

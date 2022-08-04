@@ -14,14 +14,14 @@ import pandas as pd # pip install pandas
 需要读取模型输出的标签(predict_label)以及原本的标签(true_label)
 
 '''
-target_loc = "test.txt"     # 真实标签所在的文件
+target_loc = "winData/test.txt"     # 真实标签所在的文件
 target_data = pd.read_csv(target_loc, sep="\t", names=["loc","type"])
 true_label = [i for i in target_data["type"]]
 
 # print(true_label)
 
 
-predict_loc = "HQNet_epo150_model_pred_result.csv"     # 3.ModelEvaluate.py生成的文件
+predict_loc = "pred/HQNet_epo150_model_pred_result.csv"     # 3.ModelEvaluate.py生成的文件
 
 predict_data = pd.read_csv(predict_loc)#,index_col=0)
 
@@ -53,7 +53,7 @@ print("F1 Score: ",f1)
 '''
 混淆矩阵
 '''
-label_names = ["daisy", "dandelion","rose","sunflower","tulip"]
+label_names = ["dyk", "koc", "mep", "pab", "sfi"]
 confusion = confusion_matrix(true_label, predict_label, labels=[i for i in range(len(label_names))])
 
 

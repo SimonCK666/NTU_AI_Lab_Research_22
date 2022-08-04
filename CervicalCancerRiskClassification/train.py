@@ -111,7 +111,7 @@ def test(dataloader, model):
  
  
 if __name__=='__main__':
-    batch_size = 3
+    batch_size = 15
  
     # # 给训练集和测试集分别创建一个数据集加载器
     train_data = LoadData("train.txt", True)
