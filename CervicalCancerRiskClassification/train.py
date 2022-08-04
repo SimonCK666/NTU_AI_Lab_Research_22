@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:08:07
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-08-03 19:06:12
+LastEditTime: 2022-08-04 10:59:42
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\train.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -111,14 +111,14 @@ def test(dataloader, model):
  
  
 if __name__=='__main__':
-    batch_size = 10
+    batch_size = 3
  
     # # 给训练集和测试集分别创建一个数据集加载器
-    train_data = LoadData("train.txt", True)
-    valid_data = LoadData("test.txt", False)
+    # train_data = LoadData("train.txt", True)
+    # valid_data = LoadData("test.txt", False)
     # Windows Data
-    # train_data = LoadData("winData/train.txt", True)
-    # valid_data = LoadData("winData/test.txt", False)
+    train_data = LoadData("winData/train.txt", True)
+    valid_data = LoadData("winData/test.txt", False)
  
  
     train_dataloader = DataLoader(dataset=train_data, num_workers=4, pin_memory=True, batch_size=batch_size, shuffle=True)
@@ -194,7 +194,7 @@ if __name__=='__main__':
 
     # 一共训练150次
     start_time = time.time()
-    epochs = 150
+    epochs = 1
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")
         train(train_dataloader, model, loss_fn, optimizer)
@@ -207,6 +207,6 @@ if __name__=='__main__':
     # torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\Dconv_epo500_model.pth")
     # torch.save(model.state_dict(), "exp/DHQNet_epo150_model.pth")
     # print("Saved PyTorch Model State to exp/DHQNet_epo150_model.pth")
-    torch.save(model.state_dict(), "exp/Dconv_epo10_model.pth")
-    print("Saved PyTorch Model State to exp/Dconv_epo10_model.pth")
+    torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/DHQNet_epo50_model.pth")
+    print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/DHQNet_epo50_model.pth")
  
