@@ -1,4 +1,12 @@
 '''
+Author: SimonCK666 SimonYang223@163.com
+Date: 2022-08-02 20:14:03
+LastEditors: SimonCK666 SimonYang223@163.com
+LastEditTime: 2022-08-05 09:59:13
+FilePath: \CervicalCancerRiskClassification\ModelEvaluate.py
+Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+'''
+'''
     1.单幅图片验证
     2.多幅图片验证
 '''
@@ -12,6 +20,7 @@ from createDataLoader import LoadData
 import pandas as pd
 from tqdm import tqdm
 from hqNet import HQNet
+from torch_deform_conv.cnn import get_cnn, get_deform_cnn
 
 
 def eval(dataloader, model):
@@ -45,7 +54,7 @@ if __name__ == "__main__":
         加载预训练模型
     '''
     # 1. 导入模型结构
-    model = HQNet(pretrained=False)
+    # model = HQNet(pretrained=False)
     
     # model = resnet34(pretrained=False)
     # model = resnet50()
@@ -54,6 +63,8 @@ if __name__ == "__main__":
     # model.fc = nn.Linear(512, 5)
     # model = densenet121()
     # model.classifier = nn.Linear(1024, 5)
+    model = get_deform_cnn(trainable=True)
+    model.fc = nn.Linear(128, 5)
     
     # num_ftrs = model.fc.in_features    # 获取全连接层的输入
     # model.fc = nn.Linear(num_ftrs, 5)  # 全连接层改为不同的输出
@@ -65,7 +76,8 @@ if __name__ == "__main__":
     # model_loc = "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\ResNet_epo20_model.pth"
     # model_loc = "exp/ResNet34_epo20_model.pth"
     # model_loc = "exp/DenseNet121_epo20_model.pth"
-    model_loc = "exp/DHQNet_epo15_model.pth"
+    # model_loc = "exp/DHQNet_epo15_model.pth"
+    model_loc = "exp/Dconv_epo20_model.pth"
 
     model_dict = torch.load(model_loc)
     model.load_state_dict(model_dict)
@@ -91,6 +103,8 @@ if __name__ == "__main__":
     df_pred = pd.DataFrame(data=pred, columns=label_names)
 
 
-    df_pred.to_csv('pred/DHQNet_epo15_model_pred_result.csv', encoding='gbk', index=False)
+    # df_pred.to_csv('pred/DHQNet_epo15_model_pred_result.csv', encoding='gbk', index=False)
+    df_pred.to_csv('pred/Dconv_epo20_model_pred_result.csv', encoding='gbk', index=False)
+    
     print("Done!")
 

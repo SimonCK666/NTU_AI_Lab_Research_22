@@ -26,7 +26,9 @@ true_label = [i for i in target_data["type"]]
 # predict_loc = "pred/HQNet_epo150_model_pred_result.csv"     # 3.ModelEvaluate.py生成的文件
 # predict_loc = "pred/ResNet_epo20_model_pred_result.csv"
 # predict_loc = "pred/ResNet34_epo20_model_pred_result.csv"
-predict_loc = "pred/DenseNet121_epo20_model_pred_result.csv"
+# predict_loc = "pred/DenseNet121_epo20_model_pred_result.csv"
+# predict_loc = "pred/Dconv_epo20_model_pred_result.csv"
+predict_loc = "pred\DHQNet_epo15_model_pred_result.csv"
 
 predict_data = pd.read_csv(predict_loc)#,index_col=0)
 

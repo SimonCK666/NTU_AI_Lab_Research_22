@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:08:07
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-08-04 10:59:42
+LastEditTime: 2022-08-05 11:46:40
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\train.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -23,6 +23,7 @@ from torchvision.models import vgg19
 from torchvision.models import densenet121
 from torchvision.models import Inception3
 from torchvision.models import resnet50
+from torchvision.models import mobilenet_v3_large
 from torchvision import datasets
 from torchvision.transforms import ToTensor, Lambda, Compose
 from createDataLoader import LoadData
@@ -30,7 +31,7 @@ from torch.utils.tensorboard import SummaryWriter # Load SummaryWriter
 from hqNet import HQNet
 from torch_deform_conv.cnn import get_cnn, get_deform_cnn
 
-# writer = SummaryWriter("logs") # put file into logs folder
+writer = SummaryWriter("logs") # put file into logs folder
 
 # train_root  = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train"
 # train_root  = "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/"
@@ -83,9 +84,11 @@ def train(dataloader, model, loss_fn, optimizer):
         if batch % 100 == 0:
             loss, current = loss.item(), batch * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+        writer.add_scalar("Train/Loss", loss, batch)
+        
  
  
-def test(dataloader, model):
+def test(dataloader, model, t):
     size = len(dataloader.dataset)
     # 将模型转为验证模式
     model.eval()
@@ -108,8 +111,10 @@ def test(dataloader, model):
     correct /= size
     print("correct = ",correct)
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
- 
- 
+    writer.add_scalar("Test/Accuracy", 100*correct, t)
+    writer.add_scalar("Test/Loss", test_loss, t)
+    
+
 if __name__=='__main__':
     batch_size = 15
  
@@ -168,7 +173,7 @@ if __name__=='__main__':
     '''
         6. Inception3
     '''
-    # model = Inception3()
+    model = mobilenet_v3_large()
     # model.fc = nn.Linear(2048, 5)
     '''
         F. HQNet62
@@ -198,7 +203,7 @@ if __name__=='__main__':
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")
         train(train_dataloader, model, loss_fn, optimizer)
-        test(test_dataloader, model)
+        test(test_dataloader, model, t)
 
     end_time = time.time()
     print('Done. (%.3fs)' % ((end_time - start_time) / 10))
