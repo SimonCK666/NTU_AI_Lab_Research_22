@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:08:07
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-08-05 11:46:40
+LastEditTime: 2022-08-05 12:04:06
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\train.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -31,32 +31,21 @@ from torch.utils.tensorboard import SummaryWriter # Load SummaryWriter
 from hqNet import HQNet
 from torch_deform_conv.cnn import get_cnn, get_deform_cnn
 
-writer = SummaryWriter("logs") # put file into logs folder
-
-# train_root  = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train"
-# train_root  = "/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/"
-# test_root = "E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\test\\test"
-# test_root = "/data/hyang/224_224_CervicalCancerScreening/kaggle/test/test"
-
-#if wanted to display image 
-# img = Image.open('E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train\\Type_1\\0.jpg')
-# plt.imshow(img)
-# print("Example Image Size: {}".format(img.size))
-# image_path="E:\\NTUAILab\\Data\\224_224_CervicalCancerScreening\\kaggle\\train\\train\\Type_1\\0.jpg"
-# image_path="/data/hyang/224_224_CervicalCancerScreening/kaggle/train/train/Type_1/0.jpg"
-
-# img=Image.open(image_path) # PIL库中的Image来打开指定路径下的图片，并将数据存入imgzhong
-# img_arrey = np.array(img) # 数据类型转化
-# writer.add_image("example_img",img_arrey,2,dataformats='HWC') #HWC类型格式，即高、宽、通道RBG
+writer = SummaryWriter("AlexNet_logs") # put file into logs folder
+# writer = SummaryWriter("VGG16_logs") # put file into logs folder
+# writer = SummaryWriter("VGG19_logs") # put file into logs folder
+# writer = SummaryWriter("ResNet34_logs") # put file into logs folder
+# writer = SummaryWriter("ResNet50_logs") # put file into logs folder
+# writer = SummaryWriter("Dconv_logs") # put file into logs folder
+# writer = SummaryWriter("DenseNet_logs") # put file into logs folder
+# writer = SummaryWriter("MobileNet_logs") # put file into logs folder
+# writer = SummaryWriter("HQNet_logs") # put file into logs folder
 
 # Set the currently used GPU device to device 0 only
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"   
 
 # Define the device, and whether to use GPU will be automatically selected according to the computer configuration
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-# num_classes = len([i for i in os.listdir(train_root)])
-# print("Number of Classes: {}".format(num_classes))
 
 
 # 定义训练函数，需要
@@ -67,14 +56,14 @@ def train(dataloader, model, loss_fn, optimizer):
         # print("batch: {}".format(batch))
         # 将数据存到显卡
         X, y = X.cuda(), y.cuda()
- 
+
         # 得到预测的结果pred
         pred = model(X)
- 
+
         # 计算预测的误差
         # print(pred,y)
         loss = loss_fn(pred, y)
- 
+
         # 反向传播，更新模型参数
         optimizer.zero_grad()
         loss.backward()
@@ -86,8 +75,7 @@ def train(dataloader, model, loss_fn, optimizer):
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
         writer.add_scalar("Train/Loss", loss, batch)
         
- 
- 
+
 def test(dataloader, model, t):
     size = len(dataloader.dataset)
     # 将模型转为验证模式
@@ -111,59 +99,64 @@ def test(dataloader, model, t):
     correct /= size
     print("correct = ",correct)
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
-    writer.add_scalar("Test/Accuracy", 100*correct, t)
     writer.add_scalar("Test/Loss", test_loss, t)
+    writer.add_scalar("Test/Accuracy", 100*correct, t)
     
 
 if __name__=='__main__':
-    batch_size = 15
- 
+    batch_size = 20
+
     # # 给训练集和测试集分别创建一个数据集加载器
     train_data = LoadData("train.txt", True)
     valid_data = LoadData("test.txt", False)
     # Windows Data
     # train_data = LoadData("winData/train.txt", True)
     # valid_data = LoadData("winData/test.txt", False)
- 
- 
+
+
     train_dataloader = DataLoader(dataset=train_data, num_workers=4, pin_memory=True, batch_size=batch_size, shuffle=True)
     test_dataloader = DataLoader(dataset=valid_data, num_workers=4, pin_memory=True, batch_size=batch_size)
- 
+
     for X, y in train_dataloader:
         print("Shape of X [N, C, H, W]: ", X.shape)
         print("Shape of y: ", y.shape, y.dtype)
         break
- 
- 
+
+
     # 如果显卡可用，则用显卡进行训练
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print("Using {} device".format(device))
- 
+
     # 调用刚定义的模型，将模型转到GPU（如果可用）
     '''
         1. AlexNet  Accu: 97.3%
     '''
-    # model = alexnet(pretrained=True)
+    model = alexnet(pretrained=False)
+    model.classifier[6] = nn.Linear(4096, 5)
+    '''
+        2.1 VGG16    Accu: 20%
+    '''
+    # model = vgg16(pretrained=False)
     # model.classifier[6] = nn.Linear(4096, 5)
     '''
-        2. VGG16    Accu: 20%
+        2.2 VGG19    Accu: 20%
     '''
-    # model = vgg16(pretrained=True)
+    # model = vgg19(pretrained=False)
     # model.classifier[6] = nn.Linear(4096, 5)
     '''
-        2. VGG19    Accu: 20%
+        3.1 ResNet34
     '''
-    # model = vgg19(pretrained=True)
-    # model.classifier[6] = nn.Linear(4096, 5)
+    # model = resnet50(pretrained=False)
+    # model.fc = nn.Linear(512, 5)
     '''
-        3. ResNet50 Accu: 99..
+        3.2 ResNet50 Accu: 99..
     '''
-    # model = resnet50(pretrained=True)
+    # model = resnet50(pretrained=False)
     # model.fc = nn.Linear(2048, 5)
     '''
         4. Deformable Conv 96.8%
     '''
-    # model = get_deform_cnn(trainable=True)
+    # model = get_deform_cnn(trainable=False)
     # model.fc = nn.Linear(128, 5)
     '''
         5. DenseNet
@@ -171,20 +164,19 @@ if __name__=='__main__':
     # model = densenet121()
     # model.classifier = nn.Linear(1024, 5)
     '''
-        6. Inception3
+        6. Mobilenet_v3_large
     '''
-    model = mobilenet_v3_large()
-    # model.fc = nn.Linear(2048, 5)
+    # model = mobilenet_v3_large()
+    # model.fc = nn.Linear(1280, 5)
     '''
-        F. HQNet62
+        7. HQNet62
     '''
     # 1451.219s
     # No Conv Accu: 99.6%
-    model = HQNet(pretrained=False)
+    # model = HQNet(pretrained=False)
     
     model.to(device)
     print(model)
-    
     
     # 定义损失函数，计算相差多少，交叉熵，
     loss_fn = nn.CrossEntropyLoss()
@@ -196,8 +188,7 @@ if __name__=='__main__':
     '''
     # optimizer = torch.optim.NAdam(model.parameters(), lr=1e-3)  # 初始学习率
 
-
-    # 一共训练150次
+    # 一共训练50次
     start_time = time.time()
     epochs = 50
     for t in range(epochs):
@@ -207,11 +198,27 @@ if __name__=='__main__':
 
     end_time = time.time()
     print('Done. (%.3fs)' % ((end_time - start_time) / 10))
- 
+
     # 保存训练好的模型
     # torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\Dconv_epo500_model.pth")
-    # torch.save(model.state_dict(), "exp/DHQNet_epo150_model.pth")
-    # print("Saved PyTorch Model State to exp/DHQNet_epo150_model.pth")
-    torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/DHQNet_epo50_model.pth")
-    print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/DHQNet_epo50_model.pth")
- 
+    
+    torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/AlexNet_epo50_model.pth")
+    # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/VGG16_epo50_model.pth")
+    # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/VGG19_epo50_model.pth")
+    # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/ResNet34_epo50_model.pth")
+    # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/ResNet50_epo50_model.pth")
+    # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/Dconv_epo50_model.pth")
+    # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/DenseNet_epo50_model.pth")
+    # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/MobileNet_epo50_model.pth")
+    # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/HQNet_epo50_model.pth")
+
+    print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/AlexNet_epo50_model.pth")
+    # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/VGG16_epo50_model.pth")
+    # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/VGG19_epo50_model.pth")
+    # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/ResNet34_epo50_model.pth")
+    # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/ResNet50_epo50_model.pth")
+    # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/Dconv_epo50_model.pth")
+    # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/DenseNet_epo50_model.pth")
+    # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/MobileNet_epo50_model.pth")
+    # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/HQNet_epo50_model.pth")
+    
