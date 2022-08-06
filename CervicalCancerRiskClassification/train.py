@@ -147,7 +147,7 @@ if __name__=='__main__':
         3.1 ResNet34
     '''
     # model = resnet50(pretrained=False)
-    # model.fc = nn.Linear(512, 5)
+    # model.fc = nn.Linear(2048, 5)
     '''
         3.2 ResNet50 Accu: 99..
     '''
