@@ -2,7 +2,7 @@
 Author: SimonCK666 SimonYang223@163.com
 Date: 2022-07-28 19:05:28
 LastEditors: SimonCK666 SimonYang223@163.com
-LastEditTime: 2022-08-05 11:56:54
+LastEditTime: 2022-08-12 19:32:34
 FilePath: \\NTUAILab\\CervicalCancerRiskClassification\\hqNet.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -14,6 +14,8 @@ from typing import Type, Any, Callable, Union, List, Optional
 from torch_deform_conv.layers import ConvOffset2D3x3
 from torch_deform_conv.layers import ConvOffset2D1x1
 from torch_deform_conv.layers import ConvOffset2D
+
+from torchsummary import summary
 
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
@@ -433,3 +435,15 @@ def wide_resnet101_2(pretrained: bool = False, progress: bool = True, **kwargs: 
     kwargs['width_per_group'] = 64 * 2
     return _resnet('wide_resnet101_2', Bottleneck, [3, 4, 23, 3],
                    pretrained, progress, **kwargs)
+
+
+def main():
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = HQNet(pretrained=False)
+    model.to(device)
+    
+    summary(model, (3, 224, 224))
+    
+
+if __name__ == "__main__":
+    main()
