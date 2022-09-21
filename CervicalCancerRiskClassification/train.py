@@ -31,14 +31,14 @@ from torch.utils.tensorboard import SummaryWriter # Load SummaryWriter
 from hqNet import HQNet
 from torch_deform_conv.cnn import get_cnn, get_deform_cnn
 
-writer = SummaryWriter("AlexNet_logs") # put file into logs folder
+# writer = SummaryWriter("AlexNet_logs") # put file into logs folder
 # writer = SummaryWriter("VGG16_logs") # put file into logs folder
 # writer = SummaryWriter("VGG19_logs") # put file into logs folder
 # writer = SummaryWriter("ResNet34_logs") # put file into logs folder
 # writer = SummaryWriter("ResNet50_logs") # put file into logs folder
 # writer = SummaryWriter("Dconv_logs") # put file into logs folder
 # writer = SummaryWriter("DenseNet_logs") # put file into logs folder
-# writer = SummaryWriter("MobileNet_logs") # put file into logs folder
+writer = SummaryWriter("MobileNet_logs") # put file into logs folder
 # writer = SummaryWriter("HQNet_logs") # put file into logs folder
 
 # Set the currently used GPU device to device 0 only
@@ -131,8 +131,8 @@ if __name__=='__main__':
     '''
         1. AlexNet  Accu: 97.3%
     '''
-    model = alexnet(pretrained=False)
-    model.classifier[6] = nn.Linear(4096, 5)
+    # model = alexnet(pretrained=False)
+    # model.classifier[6] = nn.Linear(4096, 5)
     '''
         2.1 VGG16    Accu: 20%
     '''
@@ -147,7 +147,7 @@ if __name__=='__main__':
         3.1 ResNet34
     '''
     # model = resnet50(pretrained=False)
-    # model.fc = nn.Linear(512, 5)
+    # model.fc = nn.Linear(2048, 5)
     '''
         3.2 ResNet50 Accu: 99..
     '''
@@ -166,8 +166,8 @@ if __name__=='__main__':
     '''
         6. Mobilenet_v3_large
     '''
-    # model = mobilenet_v3_large()
-    # model.fc = nn.Linear(1280, 5)
+    model = mobilenet_v3_large()
+    model.fc = nn.Linear(1280, 5)
     '''
         7. HQNet62
     '''
@@ -182,7 +182,7 @@ if __name__=='__main__':
     loss_fn = nn.CrossEntropyLoss()
  
     # 定义优化器，用来训练时候优化模型参数，随机梯度下降法
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)  # 初始学习率
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)  # 初始学习率
     '''
         Optimization 1: Change optimizer from SGD to Nadam
     '''
@@ -202,23 +202,23 @@ if __name__=='__main__':
     # 保存训练好的模型
     # torch.save(model.state_dict(), "E:\\NTUAILab\\CervicalCancerRiskClassification\\exp\\Dconv_epo500_model.pth")
     
-    torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/AlexNet_epo50_model.pth")
+    # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/AlexNet_epo50_model.pth")
     # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/VGG16_epo50_model.pth")
     # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/VGG19_epo50_model.pth")
     # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/ResNet34_epo50_model.pth")
     # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/ResNet50_epo50_model.pth")
     # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/Dconv_epo50_model.pth")
     # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/DenseNet_epo50_model.pth")
-    # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/MobileNet_epo50_model.pth")
+    torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/MobileNet_epo50_model.pth")
     # torch.save(model.state_dict(), "/home/hyang/workspace/HQNetRes/HQNet_epo50_model.pth")
 
-    print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/AlexNet_epo50_model.pth")
+    # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/AlexNet_epo50_model.pth")
     # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/VGG16_epo50_model.pth")
     # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/VGG19_epo50_model.pth")
     # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/ResNet34_epo50_model.pth")
     # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/ResNet50_epo50_model.pth")
     # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/Dconv_epo50_model.pth")
     # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/DenseNet_epo50_model.pth")
-    # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/MobileNet_epo50_model.pth")
+    print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/MobileNet_epo50_model.pth")
     # print("Saved PyTorch Model State to /home/hyang/workspace/HQNetRes/HQNet_epo50_model.pth")
     
